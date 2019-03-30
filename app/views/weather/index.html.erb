@@ -1,0 +1,76 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<%= form_with remote: true do %>
+  <div>
+    <%= radio_button_tag :type, "latlong", true %>
+    <%= label_tag :type_order, "Lat-Long" %>
+    <%= radio_button_tag :type, "city", true %>
+    <%= label_tag :type_order, "City/village name" %>
+    <%= radio_button_tag :type, "pincode", true %>
+    <%= label_tag :type_order, "Pincode" %>
+  </div>
+  <div>
+    <%= label_tag :type_order, "City Name" %>
+    <%= text_field_tag 'city_name' %>
+  </div>
+
+  <div>
+    <%= label_tag :type_order, "Latitude" %>
+    <%= text_field_tag 'lat' %>
+    <%= label_tag :type_order, "Longitude" %>
+    <%= text_field_tag 'lon' %>
+  </div>
+
+  <div>
+    <%= label_tag :type_order, "Pincode" %>
+    <%= text_field_tag 'pincode' %>
+  </div>
+
+  <%= submit_tag "Ok", id: 'btn_ok' %>
+
+<% end %>
+
+<div>
+  <p id="area_name"> </p>
+  <p id="temp"> </p>
+  <p id="pressure"> </p>
+</div>
+
+<script>
+  $(document).ready(function() {
+    console.log("helloe");
+    $("#btn_ok").click(function(e) {
+      e.preventDefault();
+      var data = {appid: "9dece4da8967d93b2f2633831e4d7f4a"}
+     
+      if ($("input[name='type']:checked").val() == 'pincode') {
+        var v = $("#pincode").val();
+        data['q'] = v;
+      }
+      else if ($("input[name='type']:checked").val() == 'city') {
+        var v = $("#city_name").val();
+        data['q'] = v;
+      }
+      else if ($("input[name='type']:checked").val() == 'latlong') {
+        var lat = $("#lat").val();
+        data['lat'] = lat;
+        var lon = $("#lon").val();
+        data['lon'] = lon;
+        console.log(data)
+      }
+
+      $.ajax({
+        type: "GET",
+        url: "https://api.openweathermap.org/data/2.5/weather",
+        data: data,
+        success: function(result) {
+          $("#area_name").text("AreaName: " + result["name"]);
+          $("#temp").text("Temperature: " + result["main"]["temp"]);
+          $("#pressure").text("Pressure: " + result["main"]["pressure"]);
+        },
+        error: function(result) {
+          alert('error');
+        }
+      });
+    });
+  });
+</script>
